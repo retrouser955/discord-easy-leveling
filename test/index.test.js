@@ -15,4 +15,4 @@ client.on('messageCreate', (message) => {
 leveling.on('userLevelUp', (channelId, newLevel) => {
     client.channels.cache.get(channelId).send(`level ${newLevel}`)
 })
-client.login('ODk0ODE2MzM4MjEwNjA3MTI1.YVvgpw.5Gady7_07vXhdnDx1speRU8ZsAE')
+client.login('')
