@@ -1,4 +1,12 @@
-const db = require('quick.db')
+// const db = require('quick.db')
+const Database = require('easy-json-database')
+const db = new Database("./db.json", {
+    snapshots: {
+        enabled: true,
+        interval: 24 * 60 * 60 * 1000,
+        folder: './backups/'
+    }
+});
 const { EventEmitter } = require("events");
 const eventEmmiter = new EventEmitter()
 class EasyLeveling extends EventEmitter {
@@ -9,6 +17,7 @@ class EasyLeveling extends EventEmitter {
      */
     constructor(client, options) {
         if(!client) throw new Error('Easy Leveling Error: A valid discord client must be provided')
+        super(client, options)
         this.client = client
         this.levelingAmount = options.levelingAmount || 1
         this.startingXP = options.startingLevel || 1
@@ -23,26 +32,28 @@ class EasyLeveling extends EventEmitter {
         if(!userId) throw new Error('Easy Leveling Error: A valid user id must be provided')
         if(!guildId) throw new Error('Easy Level Error: A valid guild id must be provided')
         if(!channelId) throw new Error('Easy Level Error: A valid channel id must be provided')
-        const dbHasLevel = db.has(`${userId}-${guildId}-XP`)
-        if(!dbHasLevel) {
-            await db.set(`${userId}-${guildId}-level`, this.levelingAmount)
-            return
-        }
+        const dbHasLevel = !db.has(`${userId}-${guildId}-level`)
         const userLevelUp = await db.get(`${userId}-${guildId}-XP`)
-        if(userLevelUp > 100) {
+        if(dbHasLevel) {
+            console.log(`db doesnt have`)
+            db.set(`${userId}-${guildId}-XP`, this.startingLevel)
+            db.set(`${userId}-${guildId}-level`, this.startingXP)
+        } else if(userLevelUp > 10) {
             await db.set(`${userId}-${guildId}-XP`, 0)
             const userHasLevel = db.has(`${userId}-${guildId}-level`)
             if(!userHasLevel) return await db.set(`${userId}-${guildId}-level`, 1)
             await db.add(`${userId}-${guildId}-level`, 1)
             const newLevel = db.get(`${userId}-${guildId}-level`)
             eventEmmiter.emit('userLevelUp', channelId, String(newLevel))
+        } else {
+            db.add(`${userId}-${guildId}-XP`, 1)
         }
     }
     /**
      * get the level and xp of the user
      * @param {string} userId user id
      * @param {string} guildId guild id
-     * @returns {object}
+     * @returns {object} XP and the level of the user
      */
     async getUserLevel(userId, guildId) {
         if(!userId) throw new Error('Easy Level Error: A valid user id must be provided')
@@ -80,6 +91,14 @@ class EasyLeveling extends EventEmitter {
         if(xp > this.levelUpXP) throw new Error(`Easy Level Error: Amount of XP cannot be more than ${this.levelUpXP}`)
         if(xp < 0) throw new Error(`Easy Level Error: Amount of XP cannot be more than 0`)
         await db.set(`${userId}-${guildId}-XP`, xp)
+    }
+    /**
+     * get all data from the database. powered by quick.db
+     * @returns {string} 
+     */
+    async getAllData() {
+        const allData = db.all()
+        return allData
     }
 }
 module.exports = EasyLeveling
