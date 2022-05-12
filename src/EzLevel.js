@@ -7,7 +7,8 @@ const db = new Database("./db.json", {
         folder: './backups/'
     }
 });
-const { EventEmitter } = require("events");
+const { EventEmitter } = require("events")
+const events = require('./events/events.js')
 class EasyLeveling extends EventEmitter {
     /**
      * Create a new Discord Easy Level
@@ -21,7 +22,6 @@ class EasyLeveling extends EventEmitter {
         this.levelingAmount = options.levelingAmount || 1
         this.startingXP = options.startingLevel || 1
         this.levelUpXP = options.levelUpXP || 100
-        this.eventEmiter = new EventEmitter
     }
     /**
      * add level to your desire user
@@ -33,21 +33,24 @@ class EasyLeveling extends EventEmitter {
         if(!guildId) throw new Error('Easy Level Error: A valid guild id must be provided')
         if(!channelId) throw new Error('Easy Level Error: A valid channel id must be provided')
         const dbHasLevel = !db.has(`${userId}-${guildId}-level`)
-        const userLevelUp = await db.get(`${userId}-${guildId}-XP`)
         if(dbHasLevel) {
             console.log(`db doesnt have`)
             db.set(`${userId}-${guildId}-XP`, this.startingLevel)
             db.set(`${userId}-${guildId}-level`, this.startingXP)
-        } else if(userLevelUp > 10) {
+            return
+        }
+        const userLevelUp = await db.get(`${userId}-${guildId}-XP`)
+        if(userLevelUp < 9) {
+            db.add(`${userId}-${guildId}-XP`, 1)
+        } else {
+            console.log(userLevelUp)
             await db.set(`${userId}-${guildId}-XP`, 0)
             const userHasLevel = db.has(`${userId}-${guildId}-level`)
             if(!userHasLevel) return await db.set(`${userId}-${guildId}-level`, 1)
             await db.add(`${userId}-${guildId}-level`, 1)
             const newLevel = db.get(`${userId}-${guildId}-level`)
-            const lastLevel = newLevel--
-            this.eventEmiter.emit('UserLevelUp', (newLevel, lastLevel, userId, guildId, channelId))
-        } else {
-            db.add(`${userId}-${guildId}-XP`, 1)
+            const lastLevel = newLevel - 1
+            this.emit(events.UserLevelUpEvent, newLevel, lastLevel, userId, guildId, channelId)
         }
     }
     /**
