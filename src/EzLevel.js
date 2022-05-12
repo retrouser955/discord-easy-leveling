@@ -8,7 +8,6 @@ const db = new Database("./db.json", {
     }
 });
 const { EventEmitter } = require("events");
-const eventEmmiter = new EventEmitter()
 class EasyLeveling extends EventEmitter {
     /**
      * Create a new Discord Easy Level
@@ -22,6 +21,7 @@ class EasyLeveling extends EventEmitter {
         this.levelingAmount = options.levelingAmount || 1
         this.startingXP = options.startingLevel || 1
         this.levelUpXP = options.levelUpXP || 100
+        this.eventEmiter = new EventEmitter
     }
     /**
      * add level to your desire user
@@ -44,7 +44,8 @@ class EasyLeveling extends EventEmitter {
             if(!userHasLevel) return await db.set(`${userId}-${guildId}-level`, 1)
             await db.add(`${userId}-${guildId}-level`, 1)
             const newLevel = db.get(`${userId}-${guildId}-level`)
-            eventEmmiter.emit('userLevelUp', channelId, String(newLevel))
+            const lastLevel = newLevel--
+            this.eventEmiter.emit('UserLevelUp', (newLevel, lastLevel, userId, guildId, channelId))
         } else {
             db.add(`${userId}-${guildId}-XP`, 1)
         }
