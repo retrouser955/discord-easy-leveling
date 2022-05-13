@@ -7,9 +7,13 @@
   "license": "MIT",
   "private": false,
   "dependencies": {
-    "discord.js": "^13.6.0",
     "events": "^3.3.0",
     "quick.db": "^7.1.3"
   },
-  "keywords": ["Discord", "Discord-bot", "Leveling", "discordjs"]
+  "keywords": [
+    "Discord",
+    "Discord-bot",
+    "Leveling",
+    "discordjs"
+  ]
 }
