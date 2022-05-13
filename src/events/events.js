@@ -1,3 +1,4 @@
 module.exports = {
-    UserLevelUpEvent: 'UserLevelUp'
+    UserLevelUpEvent: 'UserLevelUp',
+    ReadyEvent: 'Ready'
 }

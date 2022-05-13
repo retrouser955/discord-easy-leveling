@@ -8,7 +8,6 @@
   "private": false,
   "dependencies": {
     "discord.js": "^13.6.0",
-    "easy-json-database": "^1.5.0",
     "events": "^3.3.0",
     "quick.db": "^7.1.3"
   }
