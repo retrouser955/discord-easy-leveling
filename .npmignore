@@ -3,3 +3,7 @@ test/
 # database
 db.json
 json.sqlite
+# readalldata 
+readalldata.js
+# delete all data
+deletealldata.js

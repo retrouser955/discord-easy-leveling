@@ -5,9 +5,9 @@ const client = new DiscordClient({
 const { EasyLeveling } = require('../index.js')
 const config = require('./config.json')
 const options = {
-    levelingAmount: 1,
+    startingXP: 0,
     startingLevel: 1,
-    levelUpXP: 20
+    levelUpXP: 10
 }
 client.leveling = new EasyLeveling(client, options)
 client.on('ready', () => {
@@ -18,8 +18,5 @@ client.on('ready', () => {
 })
 client.leveling.on('UserLevelUp', (newLevel, lastLevel, userId, guildId, channelId) => {
     client.channels.cache.get(channelId).send(`level ${newLevel}`)
-})
-.on('Ready', () => {
-    console.log('Leveling system is ready!')
 })
 client.login(config.TOKEN)

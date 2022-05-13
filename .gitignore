@@ -1,4 +1,10 @@
 # packages
 node_modules/
-
+# config file for testing
 test/config.json
+# database
+json.sqlite
+# readalldata 
+readalldata.js
+# delete all data
+deletealldata.js

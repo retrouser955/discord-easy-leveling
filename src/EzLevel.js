@@ -8,7 +8,12 @@ const db = require('quick.db')
 //     }
 // });
 const { EventEmitter } = require("events")
+const process = require('process')
 const events = require('./events/events.js')
+const deleteModule = require('./deletedb.js')
+process.on('uncaughtException', (err) => {
+    this.emit(events.error, err)
+})
 class EasyLeveling extends EventEmitter {
     /**
      * Create a new Discord Easy Level
@@ -19,10 +24,9 @@ class EasyLeveling extends EventEmitter {
         if(!client) throw new Error('Easy Leveling Error: A valid discord client must be provided')
         super(client, options)
         this.client = client
-        this.levelingAmount = options.levelingAmount || 1
+        this.startingXP = options.startingXP || 1
         this.startingLevel = options.startingLevel || 1
         this.levelUpXP = options.levelUpXP || 100
-        this.emit(events.ReadyEvent)
     }
     /**
      * add level to your desire user
@@ -35,22 +39,22 @@ class EasyLeveling extends EventEmitter {
         if(!channelId) throw new Error('Easy Level Error: A valid channel id must be provided')
         const dbHasLevel = db.has(`${userId}-${guildId}-level`)
         if(!dbHasLevel) {
-            db.set(`${userId}-${guildId}-XP`, this.startingXP)
-            db.set(`${userId}-${guildId}-level`, this.startingLevel)
+            db.set(`${userId}-${guildId}-user`, { XP: this.startingXP })
+            db.set(`${userId}-${guildId}-user.level`, this.startingLevel)
             return
         }
-        const userLevelUp = await db.get(`${userId}-${guildId}-XP`)
+        const userLevelUp = await db.get(`${userId}-${guildId}-user.XP`)
         if(userLevelUp == this.levelUpXP) {
             await db.set(`${userId}-${guildId}-XP`, 0)
-            const userHasLevel = db.has(`${userId}-${guildId}-level`)
-            if(!userHasLevel) return await db.set(`${userId}-${guildId}-level`, 1)
-            await db.add(`${userId}-${guildId}-level`, 1)
-            const newLevel = db.get(`${userId}-${guildId}-level`)
+            const userHasLevel = db.has(`${userId}-${guildId}-user.level`)
+            if(!userHasLevel) return await db.set(`${userId}-${guildId}-user.level`, 1)
+            await db.add(`${userId}-${guildId}-user.level`, 1)
+            const newLevel = db.get(`${userId}-${guildId}-user.level`)
             const lastLevel = newLevel - 1
             this.emit(events.UserLevelUpEvent, newLevel, lastLevel, userId, guildId, channelId)
             return
         }
-        db.add(`${userId}-${guildId}-XP`, 1)
+        db.add(`${userId}-${guildId}-user.xp`, 1)
     }
     /**
      * get the level and xp of the user
@@ -61,8 +65,8 @@ class EasyLeveling extends EventEmitter {
     async getUserLevel(userId, guildId) {
         if(!userId) throw new Error('Easy Level Error: A valid user id must be provided')
         if(!guildId) throw new Error('Easy Level Error: A valid guild id must be provided')
-        const level = await db.get(`${userId}-${guildId}-level`)
-        const xp = await db.get(`${userId}-${guildId}-XP`)
+        const level = await db.get(`${userId}-${guildId}-user.level`)
+        const xp = await db.get(`${userId}-${guildId}-user.XP`)
         const data = {
             level: level,
             xp: xp
@@ -80,7 +84,7 @@ class EasyLeveling extends EventEmitter {
         if(typeof level != "number") throw new SyntaxError('Easy Level Error: Type of level must be a number')
         if(!userId) throw new Error('Easy Level Error: A valid user id must be provided')
         if(!guildId) throw new Error('Easy Level Error: A valid guild id must be provided')
-        await db.set(`${userId}-${guildId}-level`, level) 
+        await db.set(`${userId}-${guildId}-user.level`, level) 
     }
     /**
      * force set the xp of a user
@@ -93,7 +97,7 @@ class EasyLeveling extends EventEmitter {
         if(typeof xp != 'number') throw new SyntaxError('Easy Level Error: Type of xp must be a number')
         if(xp > this.levelUpXP) throw new Error(`Easy Level Error: Amount of XP cannot be more than ${this.levelUpXP}`)
         if(xp < 0) throw new Error(`Easy Level Error: Amount of XP cannot be more than 0`)
-        await db.set(`${userId}-${guildId}-XP`, xp)
+        await db.set(`${userId}-${guildId}-user.XP`, xp)
     }
     /**
      * get all data from the database. powered by quick.db
@@ -102,6 +106,33 @@ class EasyLeveling extends EventEmitter {
     async getAllData() {
         const allData = db.all()
         return allData
+    }
+    async deleteAllData() {
+        deleteModule.deleteAllData()
+    }
+    /**
+     * will delete a user's data from the database
+     * @param {string} userId the id of the user you want to delete
+     * @param {string} guildId the id of the guild you want the data deleted from
+     */
+    async deleteUserData(userId, guildId) {
+        if(!userId) throw new Error('Easy Level Error: A valid user id must be provided!')
+        if(!guildId) throw new Error('Easy Level Error: A valid user guild must be provided!')
+        deleteModule.deleteUserData(userId, guildId)
+    }
+    async reduceLevels(userId, guildId, amount) {
+        if(!userId) throw new Error('Easy Level Error: A valid user id must be provided!')
+        if(!guildId) throw new Error('Easy Level Error: A valid user guild must be provided!')
+        if(!amount) throw new Error('Easy Level Error: An amount must be provided!')
+        if(typeof amount != 'number') throw new Error("Easy Level TypeError: Type of 'amount' must be a number")
+        db.subtract(`${userId}-${guildId}-user.level`, amount)
+    }
+    async reduceXP(userId, guildId, amount) {
+        if(!userId) throw new Error('Easy Level Error: A valid user id must be provided!')
+        if(!guildId) throw new Error('Easy Level Error: A valid user guild must be provided!')
+        if(!amount) throw new Error('Easy Level Error: An amount must be provided!')
+        if(typeof amount != 'number') throw new Error("Easy Level TypeError: Type of 'amount' must be a number")
+        db.subtract(`${userId}-${guildId}-user.XP`, amount) 
     }
 }
 module.exports = EasyLeveling
