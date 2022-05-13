@@ -83,7 +83,7 @@ console.log(data)
 
 ## Deleting all data
 
-⚠ This will delete all data present in the database. Use this when you are sure that you want to delete the all data.
+⚠ This will delete all data present in the database. Use this when you are sure that you want to delete all the data.
 
 ```js
 client.leveling.deleteAllData()
