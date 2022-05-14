@@ -19,4 +19,8 @@ client.on('ready', () => {
 client.leveling.on('UserLevelUp', (newLevel, lastLevel, userId, guildId, channelId) => {
     client.channels.cache.get(channelId).send(`level ${newLevel}`)
 })
+client.leveling.on('error', (e, functionName) => {
+    console.log(`An error occoured at the function ${functionName}. The error is as follows`)
+    console.log(e)
+})
 client.login(config.TOKEN)
