@@ -113,4 +113,15 @@ This function will reduce a user's XP by a given amount.
 client.leveling.reduceXP(amount, guildId, amount)
 ```
 
+## Error handling event
+
+Discord Easy Leveling always try and catch code to ensure your project doesn't crash but if you want to debug, use our error handling event to log errors and where they are occouring
+
+```js
+client.leveling.on('error', (e, functionName) => {
+    console.log(`An error occoured at the function ${functionName}. The error is as follows`)
+    console.log(e)
+})
+```
+
 Having problems using the packge? Join our [discord server](https://discord.gg/PpPgaCZR44) to get help!
