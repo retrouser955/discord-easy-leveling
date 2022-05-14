@@ -112,3 +112,5 @@ This function will reduce a user's XP by a given amount.
 ```js
 client.leveling.reduceXP(amount, guildId, amount)
 ```
+
+Having problems using the packge? Join our [discord server](https://discord.gg/PpPgaCZR44) to get help!
