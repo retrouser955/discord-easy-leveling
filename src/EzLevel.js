@@ -91,7 +91,7 @@ class EasyLeveling extends EventEmitter {
             if(!guildId) throw new Error('Easy Level Error: A valid guild id must be provided')
             await db.set(`${userId}-${guildId}-user.level`, level) 
         } catch (error) {
-            this.emit(events.error, error)
+            this.emit(events.error, error, 'setLevel')
         }
     }
     /**
@@ -108,7 +108,7 @@ class EasyLeveling extends EventEmitter {
             if(xp < 0) throw new Error(`Easy Level Error: Amount of XP cannot be more than 0`)
             await db.set(`${userId}-${guildId}-user.XP`, xp)
         } catch (error) {
-            this.emit(events.error, error)
+            this.emit(events.error, error, 'setXP')
         }
     }
     /**
@@ -120,7 +120,7 @@ class EasyLeveling extends EventEmitter {
             const allData = db.all()
             return allData
         } catch (error) {
-            this.emit(events.error, error)
+            this.emit(events.error, error, 'getAllData')
         }
     }
     async deleteAllData() {
@@ -137,7 +137,7 @@ class EasyLeveling extends EventEmitter {
             if(!guildId) throw new Error('Easy Level Error: A valid user guild must be provided!')
             deleteModule.deleteUserData(userId, guildId)
         } catch(err) {
-            this.emit(events.error, error)
+            this.emit(events.error, error, 'deleteUserData')
         }
     }
     /**
@@ -154,7 +154,7 @@ class EasyLeveling extends EventEmitter {
             if(typeof amount != 'number') throw new Error("Easy Level TypeError: Type of 'amount' must be a number")
             db.subtract(`${userId}-${guildId}-user.level`, amount)
         } catch (error) {
-            this.emit(events.error, error)
+            this.emit(events.error, error, 'reduceLevels')
         }
     }
     /**
@@ -171,7 +171,7 @@ class EasyLeveling extends EventEmitter {
             if(typeof amount != 'number') throw new Error("Easy Level TypeError: Type of 'amount' must be a number")
             db.subtract(`${userId}-${guildId}-user.XP`, amount) 
         } catch (error) {
-            this.emit(events.error, error)
+            this.emit(events.error, error, 'reduceXP')
         }
     }
 }
