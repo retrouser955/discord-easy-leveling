@@ -30,10 +30,10 @@ class EasyLeveling extends EventEmitter {
      * @param {string} guildId The id of the guild that the user is in
      */
     async addLevels(userId, guildId, channelId) {
+        if(!userId) throw new Error('Easy Leveling Error: A valid user id must be provided')
+        if(!guildId) throw new Error('Easy Level Error: A valid guild id must be provided')
+        if(!channelId) throw new Error('Easy Level Error: A valid channel id must be provided')
         try {
-            if(!userId) throw new Error('Easy Leveling Error: A valid user id must be provided')
-            if(!guildId) throw new Error('Easy Level Error: A valid guild id must be provided')
-            if(!channelId) throw new Error('Easy Level Error: A valid channel id must be provided')
             const dbHasLevel = db.has(`${userId}-${guildId}-level`)
             if(!dbHasLevel) {
                 db.set(`${userId}-${guildId}-user`, { XP: this.startingXP })
@@ -63,9 +63,9 @@ class EasyLeveling extends EventEmitter {
      * @returns {object} XP and the level of the user
      */
     async getUserLevel(userId, guildId) {
+        if(!userId) throw new Error('Easy Level Error: A valid user id must be provided')
+        if(!guildId) throw new Error('Easy Level Error: A valid guild id must be provided')
         try {
-            if(!userId) throw new Error('Easy Level Error: A valid user id must be provided')
-            if(!guildId) throw new Error('Easy Level Error: A valid guild id must be provided')
             const level = await db.get(`${userId}-${guildId}-user.level`)
             const xp = await db.get(`${userId}-${guildId}-user.XP`)
             const data = {
@@ -84,11 +84,11 @@ class EasyLeveling extends EventEmitter {
      * @param {string} guildId 
      */
     async setLevel(level, userId, guildId) {
+        if(!level) throw new Error('Easy Level Error: A valid level must be provided')
+        if(typeof level != "number") throw new SyntaxError('Easy Level Error: Type of level must be a number')
+        if(!userId) throw new Error('Easy Level Error: A valid user id must be provided')
+        if(!guildId) throw new Error('Easy Level Error: A valid guild id must be provided')
         try {
-            if(!level) throw new Error('Easy Level Error: A valid level must be provided')
-            if(typeof level != "number") throw new SyntaxError('Easy Level Error: Type of level must be a number')
-            if(!userId) throw new Error('Easy Level Error: A valid user id must be provided')
-            if(!guildId) throw new Error('Easy Level Error: A valid guild id must be provided')
             await db.set(`${userId}-${guildId}-user.level`, level) 
         } catch (error) {
             this.emit(events.error, error, 'setLevel')
@@ -101,11 +101,11 @@ class EasyLeveling extends EventEmitter {
      * @param {string} guildId 
      */
     async setXP(xp, userId, guildId) {
+        if(!xp) throw new Error('Easy Level Error: A valid xp must be provided')
+        if(typeof xp != 'number') throw new SyntaxError('Easy Level Error: Type of xp must be a number')
+        if(xp > this.levelUpXP) throw new Error(`Easy Level Error: Amount of XP cannot be more than ${this.levelUpXP}`)
+        if(xp < 0) throw new Error(`Easy Level Error: Amount of XP cannot be more than 0`)
         try {
-            if(!xp) throw new Error('Easy Level Error: A valid xp must be provided')
-            if(typeof xp != 'number') throw new SyntaxError('Easy Level Error: Type of xp must be a number')
-            if(xp > this.levelUpXP) throw new Error(`Easy Level Error: Amount of XP cannot be more than ${this.levelUpXP}`)
-            if(xp < 0) throw new Error(`Easy Level Error: Amount of XP cannot be more than 0`)
             await db.set(`${userId}-${guildId}-user.XP`, xp)
         } catch (error) {
             this.emit(events.error, error, 'setXP')
@@ -132,9 +132,9 @@ class EasyLeveling extends EventEmitter {
      * @param {string} guildId the id of the guild you want the data deleted from
      */
     async deleteUserData(userId, guildId) {
+        if(!userId) throw new Error('Easy Level Error: A valid user id must be provided!')
+        if(!guildId) throw new Error('Easy Level Error: A valid user guild must be provided!')
         try {
-            if(!userId) throw new Error('Easy Level Error: A valid user id must be provided!')
-            if(!guildId) throw new Error('Easy Level Error: A valid user guild must be provided!')
             deleteModule.deleteUserData(userId, guildId)
         } catch(err) {
             this.emit(events.error, error, 'deleteUserData')
@@ -147,11 +147,11 @@ class EasyLeveling extends EventEmitter {
      * @param {number} amount Amount of levels you want to reduce
      */
     async reduceLevels(userId, guildId, amount) {
+        if(!userId) throw new Error('Easy Level Error: A valid user id must be provided!')
+        if(!guildId) throw new Error('Easy Level Error: A valid user guild must be provided!')
+        if(!amount) throw new Error('Easy Level Error: An amount must be provided!')
+        if(typeof amount != 'number') throw new Error("Easy Level TypeError: Type of 'amount' must be a number")
         try {
-            if(!userId) throw new Error('Easy Level Error: A valid user id must be provided!')
-            if(!guildId) throw new Error('Easy Level Error: A valid user guild must be provided!')
-            if(!amount) throw new Error('Easy Level Error: An amount must be provided!')
-            if(typeof amount != 'number') throw new Error("Easy Level TypeError: Type of 'amount' must be a number")
             db.subtract(`${userId}-${guildId}-user.level`, amount)
         } catch (error) {
             this.emit(events.error, error, 'reduceLevels')
@@ -159,15 +159,15 @@ class EasyLeveling extends EventEmitter {
     }
     /**
      * reduce the amount of xp(s) from a user
-     * @param {*} userId Id of the user you want to reduce xp from
-     * @param {*} guildId Id of the guild you want to reduce xp from
-     * @param {*} amount Amount of xp(s) you want to reduce
+     * @param {string} userId Id of the user you want to reduce xp from
+     * @param {string} guildId Id of the guild you want to reduce xp from
+     * @param {number} amount Amount of xp(s) you want to reduce
      */
     async reduceXP(userId, guildId, amount) {
+        if(!userId) throw new Error('Easy Level Error: A valid user id must be provided!')
+        if(!guildId) throw new Error('Easy Level Error: A valid user guild must be provided!')
+        if(!amount) throw new Error('Easy Level Error: An amount must be provided!')
         try {
-            if(!userId) throw new Error('Easy Level Error: A valid user id must be provided!')
-            if(!guildId) throw new Error('Easy Level Error: A valid user guild must be provided!')
-            if(!amount) throw new Error('Easy Level Error: An amount must be provided!')
             if(typeof amount != 'number') throw new Error("Easy Level TypeError: Type of 'amount' must be a number")
             db.subtract(`${userId}-${guildId}-user.XP`, amount) 
         } catch (error) {
