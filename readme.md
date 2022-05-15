@@ -77,7 +77,7 @@ client.leveling.setXP(level, userId, guildId)
 This will get all the data from the database.
 
 ```js
-const data = client.leveling.deleteAllData()
+const data = client.leveling.getUserLevel(userId, guildId)
 console.log(data)
 ```
 
