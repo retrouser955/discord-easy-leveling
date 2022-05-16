@@ -119,14 +119,14 @@ class EasyLeveling extends EventEmitter {
      */
     async getAllData() {
         try {
-            const allData = db.all()
+            const allData = this.db.all()
             return allData
         } catch (error) {
             this.emit(events.error, error, 'getAllData')
         }
     }
     async deleteAllData() {
-        deleteModule.deleteAllData(db)
+        deleteModule.deleteAllData(this.db)
     }
     /**
      * will delete a user's data from the database
