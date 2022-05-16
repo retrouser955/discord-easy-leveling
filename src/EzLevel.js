@@ -126,7 +126,7 @@ class EasyLeveling extends EventEmitter {
         }
     }
     async deleteAllData() {
-        deleteModule.deleteAllData()
+        deleteModule.deleteAllData(db)
     }
     /**
      * will delete a user's data from the database
