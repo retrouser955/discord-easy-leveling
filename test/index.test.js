@@ -7,7 +7,8 @@ const config = require('./config.json')
 const options = {
     startingXP: 0,
     startingLevel: 1,
-    levelUpXP: 10
+    levelUpXP: 10,
+    database: 'json'
 }
 client.leveling = new EasyLeveling(client, options)
 client.on('ready', () => {

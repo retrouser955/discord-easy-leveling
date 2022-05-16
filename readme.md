@@ -26,7 +26,8 @@ const config = {
 const options = {
     startingXP: 0,
     startingLevel: 1,
-    levelUpXP: 100
+    levelUpXP: 100,
+    database: 'sqlite' // or 'json'
 }
 const leveling = new EasyLeveling(client, options)
 // creating a new 'EasyLeveling' client

@@ -1,12 +1,14 @@
 {
   "name": "discord-easy-leveling",
-  "version": "0.0.4",
+  "version": "0.1.1",
   "description": "An easy package to make leveling system for your bot",
   "main": "index.js",
   "author": "retro_ig",
   "license": "MIT",
   "private": false,
   "dependencies": {
+    "discord.js": "^13.7.0",
+    "easy-json-database": "^1.5.0",
     "events": "^3.3.0",
     "quick.db": "^7.1.3"
   },

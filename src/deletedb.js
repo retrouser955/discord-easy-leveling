@@ -4,9 +4,8 @@ function deleteAllData(db) {
         db.delete(data.ID)
     }
 }
-async function deleteXP(userId, guildId) {
-    await db.delete(`${userId}-${guildId}-XP`)
-    await db.delete(`${userId}-${guildId}-level`)
+async function deleteXP(userId, guildId, db) {
+    await db.delete(`${userId}-${guildId}-user`)
 }
 module.exports = {
     deleteAllData: deleteAllData,

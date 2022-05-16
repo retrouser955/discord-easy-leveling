@@ -1,12 +1,4 @@
-const db = require('quick.db')
-// const Database = require('easy-json-database')
-// const db = new Database("./db.json", {
-//     snapshots: {
-//         enabled: true,
-//         interval: 24 * 60 * 60 * 1000,
-//         folder: './backups/'
-//     }
-// });
+const Database = require('easy-json-database')
 const { EventEmitter } = require("events")
 const events = require('./events/events.js')
 const deleteModule = require('./deletedb.js')
@@ -17,12 +9,22 @@ class EasyLeveling extends EventEmitter {
      * @param {object} options Discord XP level options
      */
     constructor(client, options) {
-        if(!client) throw new Error('Easy Leveling Error: A valid discord client must be provided')
         super(client, options)
+        if(!client) throw new Error('Easy Leveling Error: A valid discord client must be provided')
+        if(!options) throw new Error('Easy Leveling Error: Options must be defined. Consinder reading readme.md')
+        if(typeof options != 'object') throw new Error('Easy Leveling Error: Typeof options must be an object')
+        // if(!options.startingXP || !options.startingLevel || !options.levelUpXP || !options.database) throw new Error('Easy Leveling Error: starting XP, starting Level or level up XP must be defined')
         this.client = client
         this.startingXP = options.startingXP || 1
         this.startingLevel = options.startingLevel || 1
         this.levelUpXP = options.levelUpXP || 100
+        if(options.database == 'json') {
+            this.db = new Database('./EasyLeveling.json')
+        } else if(options.database == 'sqlite') {
+            this.db = require('quick.db')
+        } else {
+            throw new Error("Easy Leveling Error: Database must be an option between a 'json' databse and a 'sqlite' database")
+        }
     }
     /**
      * add level to your desire user
@@ -34,24 +36,24 @@ class EasyLeveling extends EventEmitter {
         if(!guildId) throw new Error('Easy Level Error: A valid guild id must be provided')
         if(!channelId) throw new Error('Easy Level Error: A valid channel id must be provided')
         try {
-            const dbHasLevel = db.has(`${userId}-${guildId}-level`)
+            const dbHasLevel = this.db.has(`${userId}-${guildId}-level`)
             if(!dbHasLevel) {
-                db.set(`${userId}-${guildId}-user`, { XP: this.startingXP })
-                db.set(`${userId}-${guildId}-user.level`, this.startingLevel)
+                this.db.set(`${userId}-${guildId}-user`, { XP: this.startingXP })
+                this.db.set(`${userId}-${guildId}-user.level`, this.startingLevel)
                 return
             }
-            const userLevelUp = await db.get(`${userId}-${guildId}-user.XP`)
+            const userLevelUp = await this.db.get(`${userId}-${guildId}-user.XP`)
             if(userLevelUp == this.levelUpXP) {
-                await db.set(`${userId}-${guildId}-XP`, 0)
-                const userHasLevel = db.has(`${userId}-${guildId}-user.level`)
-                if(!userHasLevel) return await db.set(`${userId}-${guildId}-user.level`, 1)
-                await db.add(`${userId}-${guildId}-user.level`, 1)
-                const newLevel = db.get(`${userId}-${guildId}-user.level`)
+                await this.db.set(`${userId}-${guildId}-XP`, 0)
+                const userHasLevel = this.db.has(`${userId}-${guildId}-user.level`)
+                if(!userHasLevel) return await this.db.set(`${userId}-${guildId}-user.level`, 1)
+                await this.db.add(`${userId}-${guildId}-user.level`, 1)
+                const newLevel = this.db.get(`${userId}-${guildId}-user.level`)
                 const lastLevel = newLevel - 1
                 this.emit(events.UserLevelUpEvent, newLevel, lastLevel, userId, guildId, channelId)
                 return
             }
-            db.add(`${userId}-${guildId}-user.xp`, 1)
+            this.db.add(`${userId}-${guildId}-user.xp`, 1)
         } catch (error) {
             this.emit(events.error, error, 'addLevels')
         }
@@ -66,8 +68,8 @@ class EasyLeveling extends EventEmitter {
         if(!userId) throw new Error('Easy Level Error: A valid user id must be provided')
         if(!guildId) throw new Error('Easy Level Error: A valid guild id must be provided')
         try {
-            const level = await db.get(`${userId}-${guildId}-user.level`)
-            const xp = await db.get(`${userId}-${guildId}-user.XP`)
+            const level = await this.db.get(`${userId}-${guildId}-user.level`)
+            const xp = await this.db.get(`${userId}-${guildId}-user.XP`)
             const data = {
                 level: level,
                 xp: xp
@@ -89,7 +91,7 @@ class EasyLeveling extends EventEmitter {
         if(!userId) throw new Error('Easy Level Error: A valid user id must be provided')
         if(!guildId) throw new Error('Easy Level Error: A valid guild id must be provided')
         try {
-            await db.set(`${userId}-${guildId}-user.level`, level) 
+            await this.db.set(`${userId}-${guildId}-user.level`, level) 
         } catch (error) {
             this.emit(events.error, error, 'setLevel')
         }
@@ -106,7 +108,7 @@ class EasyLeveling extends EventEmitter {
         if(xp > this.levelUpXP) throw new Error(`Easy Level Error: Amount of XP cannot be more than ${this.levelUpXP}`)
         if(xp < 0) throw new Error(`Easy Level Error: Amount of XP cannot be more than 0`)
         try {
-            await db.set(`${userId}-${guildId}-user.XP`, xp)
+            await this.db.set(`${userId}-${guildId}-user.XP`, xp)
         } catch (error) {
             this.emit(events.error, error, 'setXP')
         }
@@ -135,7 +137,7 @@ class EasyLeveling extends EventEmitter {
         if(!userId) throw new Error('Easy Level Error: A valid user id must be provided!')
         if(!guildId) throw new Error('Easy Level Error: A valid user guild must be provided!')
         try {
-            deleteModule.deleteUserData(userId, guildId)
+            deleteModule.deleteUserData(userId, guildId, this.db)
         } catch(err) {
             this.emit(events.error, error, 'deleteUserData')
         }
