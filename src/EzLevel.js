@@ -9,7 +9,7 @@ class EasyLeveling extends EventEmitter {
      * @param {object} options Discord XP level options
      */
     constructor(client, options) {
-        super(client, options)
+        super()
         if(!client) throw new Error('Easy Leveling Error: A valid discord client must be provided')
         if(!options) throw new Error('Easy Leveling Error: Options must be defined. Consinder reading readme.md')
         if(typeof options != 'object') throw new Error('Easy Leveling Error: Typeof options must be an object')
@@ -20,10 +20,10 @@ class EasyLeveling extends EventEmitter {
         this.levelUpXP = options.levelUpXP || 100
         if(options.database == 'json') {
             this.db = new Database('./EasyLeveling.json')
-	    this.dbName = 'easyJson'
+	        this.dbName = 'json'
         } else if(options.database == 'sqlite') {
             this.db = require('quick.db')
-	    this.dbName = 'sqlite'
+	        this.dbName = 'sqlite'
         } else {
             throw new Error("Easy Leveling Error: Database must be an option between a 'json' databse and a 'sqlite' database")
         }
@@ -38,7 +38,7 @@ class EasyLeveling extends EventEmitter {
         if(!guildId) throw new Error('Easy Level Error: A valid guild id must be provided')
         if(!channelId) throw new Error('Easy Level Error: A valid channel id must be provided')
         try {
-            const dbHasLevel = this.db.has(`${userId}-${guildId}-user.level`)
+            const dbHasLevel = this.db.has(`${userId}-${guildId}-user`)
             if(!dbHasLevel) {
                 this.db.set(`${userId}-${guildId}-user`, { XP: this.startingXP })
                 this.db.set(`${userId}-${guildId}-user.level`, this.startingLevel)
@@ -53,6 +53,12 @@ class EasyLeveling extends EventEmitter {
                 const newLevel = this.db.get(`${userId}-${guildId}-user.level`)
                 const lastLevel = newLevel - 1
                 this.emit(events.UserLevelUpEvent, newLevel, lastLevel, userId, guildId, channelId)
+                return
+            }
+            if(this.dbName == 'json') {
+                const currectData = await this.db.get(`${userId}-${guildId}-user.XP`)
+                const newData = currectData + 1
+                this.db.set(`${userId}-${guildId}-user.XP`, newData)
                 return
             }
             this.db.add(`${userId}-${guildId}-user.XP`, 1)

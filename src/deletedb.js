@@ -1,5 +1,5 @@
 function deleteAllData(db, dbName) {
-    if(dbName == "easyJson") return db.clear()
+    if(dbName == "json") return db.clear()
     const deleteData = db.all()
     for(const data of deleteData) {
         db.delete(data.ID)
