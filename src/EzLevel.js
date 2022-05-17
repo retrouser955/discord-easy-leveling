@@ -38,7 +38,7 @@ class EasyLeveling extends EventEmitter {
         if(!guildId) throw new Error('Easy Level Error: A valid guild id must be provided')
         if(!channelId) throw new Error('Easy Level Error: A valid channel id must be provided')
         try {
-            const dbHasLevel = this.db.has(`${userId}-${guildId}-level`)
+            const dbHasLevel = this.db.has(`${userId}-${guildId}-user.level`)
             if(!dbHasLevel) {
                 this.db.set(`${userId}-${guildId}-user`, { XP: this.startingXP })
                 this.db.set(`${userId}-${guildId}-user.level`, this.startingLevel)
