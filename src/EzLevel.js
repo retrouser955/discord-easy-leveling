@@ -20,8 +20,10 @@ class EasyLeveling extends EventEmitter {
         this.levelUpXP = options.levelUpXP || 100
         if(options.database == 'json') {
             this.db = new Database('./EasyLeveling.json')
+	    this.dbName = 'easyJson'
         } else if(options.database == 'sqlite') {
             this.db = require('quick.db')
+	    this.dbName = 'sqlite'
         } else {
             throw new Error("Easy Leveling Error: Database must be an option between a 'json' databse and a 'sqlite' database")
         }
@@ -44,7 +46,7 @@ class EasyLeveling extends EventEmitter {
             }
             const userLevelUp = await this.db.get(`${userId}-${guildId}-user.XP`)
             if(userLevelUp == this.levelUpXP) {
-                await this.db.set(`${userId}-${guildId}-XP`, 0)
+                await this.db.set(`${userId}-${guildId}-user.XP`, 0)
                 const userHasLevel = this.db.has(`${userId}-${guildId}-user.level`)
                 if(!userHasLevel) return await this.db.set(`${userId}-${guildId}-user.level`, 1)
                 await this.db.add(`${userId}-${guildId}-user.level`, 1)
@@ -53,7 +55,7 @@ class EasyLeveling extends EventEmitter {
                 this.emit(events.UserLevelUpEvent, newLevel, lastLevel, userId, guildId, channelId)
                 return
             }
-            this.db.add(`${userId}-${guildId}-user.xp`, 1)
+            this.db.add(`${userId}-${guildId}-user.XP`, 1)
         } catch (error) {
             this.emit(events.error, error, 'addLevels')
         }
@@ -126,7 +128,7 @@ class EasyLeveling extends EventEmitter {
         }
     }
     async deleteAllData() {
-        deleteModule.deleteAllData(this.db)
+        deleteModule.deleteAllData(this.db, this.dbName)
     }
     /**
      * will delete a user's data from the database
