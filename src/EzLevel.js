@@ -162,6 +162,12 @@ class EasyLeveling extends EventEmitter {
         if(!amount) throw new Error('Easy Level Error: An amount must be provided!')
         if(typeof amount != 'number') throw new Error("Easy Level TypeError: Type of 'amount' must be a number")
         try {
+            if(this.dbName == 'json') {
+                const currectData = await this.db.get(`${userId}-${guildId}-user.level`)
+                const newData = currectData - amount
+                this.db.set(`${userId}-${guildId}-user.level`, newData)
+                return
+            }
             db.subtract(`${userId}-${guildId}-user.level`, amount)
         } catch (error) {
             this.emit(events.error, error, 'reduceLevels')
@@ -179,6 +185,12 @@ class EasyLeveling extends EventEmitter {
         if(!amount) throw new Error('Easy Level Error: An amount must be provided!')
         try {
             if(typeof amount != 'number') throw new Error("Easy Level TypeError: Type of 'amount' must be a number")
+            if(this.dbName == 'json') {
+                const currectData = await this.db.get(`${userId}-${guildId}-user.XP`)
+                const newData = currectData - amount
+                this.db.set(`${userId}-${guildId}-user.XP`, newData)
+                return
+            }
             db.subtract(`${userId}-${guildId}-user.XP`, amount) 
         } catch (error) {
             this.emit(events.error, error, 'reduceXP')
