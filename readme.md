@@ -38,7 +38,7 @@ client.on('ready', () => {
 })
 client.on('messageCreate', (message) => {
     if(message.author.bot) return
-    // will will add xp is the message author is bot
+    // will not add xp is the message author is bot
     client.leveling.addLevels(message.author.id, message.guild.id, message.channel.id)
     // add levels to message author in message guild
     // the first parameter is message author's id
