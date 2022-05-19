@@ -15,10 +15,14 @@ client.on('ready', () => {
     console.log(client.user.tag + ' is ready!')
 })
 .on('messageCreate', (message) => {
+    if(message.author.bot) return
     client.leveling.addLevels(message.author.id, message.guild.id, message.channel.id)
+    if(message.content === '!top10') {
+        client.leveling.getTopUser(message.guild.id, 10)
+    }
 })
 client.leveling.on('UserLevelUp', (newLevel, lastLevel, userId, guildId, channelId) => {
-    client.channels.cache.get(channelId).send(`level ${newLevel}`)
+    client.channels.cache.get(channelId).send(`Congrats <@${userId}>! You have advanced to level ${newLevel}. Your old level was level ${lastLevel}`)
 })
 client.leveling.on('error', (e, functionName) => {
     console.log(`An error occoured at the function ${functionName}. The error is as follows`)

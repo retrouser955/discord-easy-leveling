@@ -38,30 +38,41 @@ class EasyLeveling extends EventEmitter {
         if(!guildId) throw new Error('Easy Level Error: A valid guild id must be provided')
         if(!channelId) throw new Error('Easy Level Error: A valid channel id must be provided')
         try {
-            const dbHasLevel = this.db.has(`${userId}-${guildId}-user`)
+            const dbHasLevel = this.db.has(`${userId}-${guildId}`)
             if(!dbHasLevel) {
-                this.db.set(`${userId}-${guildId}-user`, { XP: this.startingXP })
-                this.db.set(`${userId}-${guildId}-user.level`, this.startingLevel)
+                this.db.set(`${userId}-${guildId}`, { XP: this.startingXP })
+                this.db.set(`${userId}-${guildId}.level`, this.startingLevel)
+                this.db.set(`${userId}-${guildId}.userId`, userId)
+                this.db.set(`${userId}-${guildId}.XPoverTime`, 1)
                 return
             }
-            const userLevelUp = await this.db.get(`${userId}-${guildId}-user.XP`)
+            const userLevelUp = await this.db.get(`${userId}-${guildId}.XP`)
             if(userLevelUp == this.levelUpXP) {
-                await this.db.set(`${userId}-${guildId}-user.XP`, 0)
-                const userHasLevel = this.db.has(`${userId}-${guildId}-user.level`)
-                if(!userHasLevel) return await this.db.set(`${userId}-${guildId}-user.level`, 1)
-                await this.db.add(`${userId}-${guildId}-user.level`, 1)
-                const newLevel = this.db.get(`${userId}-${guildId}-user.level`)
+                await this.db.set(`${userId}-${guildId}.XP`, 0)
+                const userHasLevel = this.db.has(`${userId}-${guildId}.level`)
+                if(!userHasLevel) return await this.db.set(`${userId}-${guildId}.level`, 1)
+                if(this.dbName == 'json') {
+                    const newLevel = userLevelUp + 1
+                    this.db.set(`${userId}-${guildId}.level`, newLevel)
+                } else {
+                    await this.db.add(`${userId}-${guildId}.level`, 1)
+                }
+                const newLevel = this.db.get(`${userId}-${guildId}.level`)
                 const lastLevel = newLevel - 1
                 this.emit(events.UserLevelUpEvent, newLevel, lastLevel, userId, guildId, channelId)
                 return
             }
             if(this.dbName == 'json') {
-                const currectData = await this.db.get(`${userId}-${guildId}-user.XP`)
+                const currectData = await this.db.get(`${userId}-${guildId}.XP`)
+                const XPoverTime = await this.db.get(`${userId}-${guildId}.XPoverTime`)
+                const newXPoverTime = XPoverTime + 1
                 const newData = currectData + 1
-                this.db.set(`${userId}-${guildId}-user.XP`, newData)
+                await this.db.set(`${userId}-${guildId}.XP`, newData)
+                await this.db.set(`${userId}-${guildId}.XPoverTime`, newXPoverTime)
                 return
             }
-            this.db.add(`${userId}-${guildId}-user.XP`, 1)
+            this.db.add(`${userId}-${guildId}.XP`, 1)
+            this.db.add(`${userId}-${guildId}.XPoverTime`, 1)
         } catch (error) {
             this.emit(events.error, error, 'addLevels')
         }
@@ -76,8 +87,8 @@ class EasyLeveling extends EventEmitter {
         if(!userId) throw new Error('Easy Level Error: A valid user id must be provided')
         if(!guildId) throw new Error('Easy Level Error: A valid guild id must be provided')
         try {
-            const level = await this.db.get(`${userId}-${guildId}-user.level`)
-            const xp = await this.db.get(`${userId}-${guildId}-user.XP`)
+            const level = await this.db.get(`${userId}-${guildId}.level`)
+            const xp = await this.db.get(`${userId}-${guildId}.XP`)
             const data = {
                 level: level,
                 xp: xp
@@ -99,7 +110,7 @@ class EasyLeveling extends EventEmitter {
         if(!userId) throw new Error('Easy Level Error: A valid user id must be provided')
         if(!guildId) throw new Error('Easy Level Error: A valid guild id must be provided')
         try {
-            await this.db.set(`${userId}-${guildId}-user.level`, level) 
+            await this.db.set(`${userId}-${guildId}.level`, level) 
         } catch (error) {
             this.emit(events.error, error, 'setLevel')
         }
@@ -116,7 +127,7 @@ class EasyLeveling extends EventEmitter {
         if(xp > this.levelUpXP) throw new Error(`Easy Level Error: Amount of XP cannot be more than ${this.levelUpXP}`)
         if(xp < 0) throw new Error(`Easy Level Error: Amount of XP cannot be more than 0`)
         try {
-            await this.db.set(`${userId}-${guildId}-user.XP`, xp)
+            await this.db.set(`${userId}-${guildId}.XP`, xp)
         } catch (error) {
             this.emit(events.error, error, 'setXP')
         }
@@ -162,13 +173,18 @@ class EasyLeveling extends EventEmitter {
         if(!amount) throw new Error('Easy Level Error: An amount must be provided!')
         if(typeof amount != 'number') throw new Error("Easy Level TypeError: Type of 'amount' must be a number")
         try {
+            const xpAmount = amount * 100
             if(this.dbName == 'json') {
-                const currectData = await this.db.get(`${userId}-${guildId}-user.level`)
+                const currectData = await this.db.get(`${userId}-${guildId}.level`)
                 const newData = currectData - amount
-                this.db.set(`${userId}-${guildId}-user.level`, newData)
+                const XPoverTime = await this.db.get(`${userId}-${guildId}.XPoverTime`)
+                const newXPoverTime = XPoverTime - xpAmount
+                this.db.set(`${userId}-${guildId}.level`, newData)
+                this.db.set(`${userId}-${guildId}.XPoverTime`, newXPoverTime)
                 return
             }
-            db.subtract(`${userId}-${guildId}-user.level`, amount)
+            this.db.subtract(`${userId}-${guildId}.level`, amount)
+            this.db.subtract(`${userId}-${guildId}.XPoverTime`, xpAmount)
         } catch (error) {
             this.emit(events.error, error, 'reduceLevels')
         }
@@ -186,15 +202,66 @@ class EasyLeveling extends EventEmitter {
         try {
             if(typeof amount != 'number') throw new Error("Easy Level TypeError: Type of 'amount' must be a number")
             if(this.dbName == 'json') {
-                const currectData = await this.db.get(`${userId}-${guildId}-user.XP`)
+                const currectData = await this.db.get(`${userId}-${guildId}.XP`)
                 const newData = currectData - amount
-                this.db.set(`${userId}-${guildId}-user.XP`, newData)
+                const XPoverTime = await this.db.get(`${userId}-${guildId}.XPoverTime`)
+                const newXPoverTime = XPoverTime - amount
+                this.db.set(`${userId}-${guildId}.XP`, newData)
+                this.db.set(`${userId}-${guildId}.XPoverTime`, newXPoverTime)
                 return
             }
-            db.subtract(`${userId}-${guildId}-user.XP`, amount) 
+            this.db.subtract(`${userId}-${guildId}.XPoverTime`, amount)
+            this.db.subtract(`${userId}-${guildId}.XP`, amount) 
         } catch (error) {
             this.emit(events.error, error, 'reduceXP')
         }
+    }
+    async getTopUser(guildId, amountOfUsers) {
+        if(!guildId) throw new Error('Easy level Error: guildId must be a valid discord guild')
+        if(!amountOfUsers) throw new Error('Easy level Error: Amount of users must defined')
+        if(typeof amountOfUsers != 'number') throw new TypeError('Easy Level TypeError: Type of \'amount of users\' must be a number')
+        if(this.dbName == 'json') {
+            const allData = await this.db.all()
+            const XPforGuild = []
+            for(const key of allData) {
+                if(String(key.key).includes(guildId)) {
+                    XPforGuild.push({
+                        xpOverTime: key.data.XPoverTime,
+                        userId: key.data.userId,
+                        level: key.data.level,
+                        xp: key.data.XP
+                    })
+                }
+            }
+            XPforGuild.sort((a, b) => {
+                return b.xpOverTime - a.xpOverTime
+            })
+            let top10 = []
+            for(let i = 0; i > amountOfUsers; i++) {
+                top10.push(XPforGuild[i])
+            }
+            return top10
+        }
+        const allData = await this.db.all()
+        const XPforGuild = []
+        for(const key of allData) {
+            if(String(key.ID).includes(guildId)) {
+                XPforGuild.push({
+                    xpOverTime: key.data.XPoverTime,
+                    userId: key.data.userId,
+                    level: key.data.level,
+                    xp: key.data.XP
+                })
+            }
+        }
+        XPforGuild.sort((a, b) => {
+            return b.xpOverTime - a.xpOverTime
+        })
+        let top10 = []
+        for(let i = 0; i > amountOfUsers; i++) {
+            top10.push(XPforGuild[i])
+        }
+        return top10
     }
 }
 module.exports = EasyLeveling
