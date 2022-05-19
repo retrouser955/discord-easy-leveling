@@ -8,7 +8,7 @@ const options = {
     startingXP: 0,
     startingLevel: 1,
     levelUpXP: 10,
-    database: 'json',
+    database: 'json'
 }
 
 const fs = require('fs')
@@ -61,7 +61,7 @@ client.leveling.on('UserLevelUp', (newLevel, lastLevel, userId, guildId, channel
     client.channels.cache.get(channelId).send(`Congrats <@${ userId }>! You have advanced to level ${ newLevel }. Your old level was level ${ lastLevel }`)
 })
 client.leveling.on('error', (e, functionName) => {
-    console.log(`An error occoured at the function ${ functionName }. The error is as follows`)
+    console.log(`An error occured at the function ${functionName}. The error is as follows`)
     console.log(e)
 })
 client.login(config.TOKEN)
