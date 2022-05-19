@@ -8,7 +8,7 @@ const options = {
     startingXP: 0,
     startingLevel: 1,
     levelUpXP: 10,
-    database: 'sqlite',
+    database: 'json',
 }
 
 const fs = require('fs')

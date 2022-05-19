@@ -4,13 +4,10 @@ node_modules/
 test/config.json
 # database
 json.sqlite
+EasyLeveling.json
 # readalldata 
 readalldata.js
 # delete all data
 deletealldata.js
-
-EasyLeveling.json
-
-.env
 
 package-lock.json
