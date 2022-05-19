@@ -124,5 +124,16 @@ client.leveling.on('error', (e, functionName) => {
     console.log(e)
 })
 ```
+## Getting the top members!
+
+Discord easy leveling provide a easy way to create a fast and easy way to make a leaderboard
+
+```js
+// with you async function 
+const topUsers = await client.leveling.getTopUser(guildId, 10)
+// top users mapped and sorted in an array
+console.log(topUsers)
+```
+The parameter that you define second is the amount of users you want in the array. If there are less users than that number, function will simply return undefined.
 
 Having problems using the packge? Join our [discord server](https://discord.gg/PpPgaCZR44) to get help!
