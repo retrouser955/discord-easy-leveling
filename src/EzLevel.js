@@ -237,7 +237,7 @@ class EasyLeveling extends EventEmitter {
                 return b.xpOverTime - a.xpOverTime
             })
             let top10 = []
-            for(let i = 0; i > amountOfUsers; i++) {
+            for(let i = 0; i < amountOfUsers; i++) {
                 top10.push(XPforGuild[i])
             }
             return top10
@@ -258,7 +258,7 @@ class EasyLeveling extends EventEmitter {
             return b.xpOverTime - a.xpOverTime
         })
         let top10 = []
-        for(let i = 0; i > amountOfUsers; i++) {
+        for(let i = 0; i < amountOfUsers; i++) {
             top10.push(XPforGuild[i])
         }
         return top10

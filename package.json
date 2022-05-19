@@ -6,6 +6,9 @@
   "author": "retro_ig",
   "license": "MIT",
   "private": false,
+  "scripts": {
+    "test": "echo \"Test is a success!\""
+  },
   "dependencies": {
     "discord.js": "^13.7.0",
     "easy-json-database": "^1.5.0",
