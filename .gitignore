@@ -8,3 +8,9 @@ json.sqlite
 readalldata.js
 # delete all data
 deletealldata.js
+
+EasyLeveling.json
+
+.env
+
+package-lock.json
