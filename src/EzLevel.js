@@ -1,12 +1,38 @@
+/**
+ * Options for discord easy leveling
+ * @typedef {object} DiscordEasyLevelingOptions
+ * @property {string} startingXP The amount of XP you want to user to start with
+ * @property {string} startingLevel The level you want the user to start with
+ * @property {string} levelUpXP The amount of XP need to level up a user
+ * @property {string} database The database you want. This can be json or sqlite
+ */
+/**
+ * @typedef {object} UserDataObject
+ * @property {number} XPoverTime Amount of XP a user has aquired overtime
+ * @property {string} userId Id of the user
+ * @property {number} level Current level of a user
+ * @property {number} xp Current XP of a user
+ */
+/**
+ * Array of objects containing all users data
+ * @typedef {array<object>} AllData
+ * @property {string} ID the id of the data
+ * @property {UserDataObject} UserData The data of a user
+ */
+/**
+ * @author retrouser955
+ * @see <a href="https://github.com/retrouser955">Retro github</a>
+ */
 const Database = require('easy-json-database')
 const { EventEmitter } = require("events")
 const events = require('./events/events.js')
 const deleteModule = require('./deletedb.js')
+const generateChartImage = require('./xpChart.js')
 class EasyLeveling extends EventEmitter {
     /**
      * Create a new Discord Easy Level
      * @param {any} client Your Discord.js Client
-     * @param {object} options Discord XP level options
+     * @param {DiscordEasyLevelingOptions} options Discord XP level options
      */
     constructor(client, options) {
         super()
@@ -27,6 +53,9 @@ class EasyLeveling extends EventEmitter {
         } else {
             throw new Error("Easy Leveling Error: Database must be an option between a 'json' databse and a 'sqlite' database")
         }
+        process.on('uncaughtException', (err) => {
+            this.emit(events.error, err, undefined)
+        })
     }
     /**
      * add level to your desire user
@@ -100,9 +129,9 @@ class EasyLeveling extends EventEmitter {
     }
     /**
      * force set the level of a user
-     * @param {number} level 
-     * @param {string} userId 
-     * @param {string} guildId 
+     * @param {number} level amount of level you want the author to have
+     * @param {string} userId user id of the user you want to set level to
+     * @param {string} guildId the discord guild you want the level to be set in
      */
     async setLevel(level, userId, guildId) {
         if(!level) throw new Error('Easy Level Error: A valid level must be provided')
@@ -117,9 +146,9 @@ class EasyLeveling extends EventEmitter {
     }
     /**
      * force set the xp of a user
-     * @param {string} xp 
-     * @param {string} userId 
-     * @param {string} guildId 
+     * @param {string} xp amount of XP you want the author to have
+     * @param {string} userId user id of the user you want to set XP to
+     * @param {string} guildId the discord guild you want the XP to be set in
      */
     async setXP(xp, userId, guildId) {
         if(!xp) throw new Error('Easy Level Error: A valid xp must be provided')
@@ -134,7 +163,7 @@ class EasyLeveling extends EventEmitter {
     }
     /**
      * get all data from the database. powered by quick.db
-     * @returns {string} 
+     * @returns {AllData}
      */
     async getAllData() {
         try {
@@ -216,6 +245,12 @@ class EasyLeveling extends EventEmitter {
             this.emit(events.error, error, 'reduceXP')
         }
     }
+    /**
+     * get the top users of a guild
+     * @param {string} guildId The guild id of the top users
+     * @param {number} amountOfUsers Amount of people in the array
+     * @returns {array} top users 
+     */
     async getTopUser(guildId, amountOfUsers) {
         if(!guildId) throw new Error('Easy level Error: guildId must be a valid discord guild')
         if(!amountOfUsers) throw new Error('Easy level Error: Amount of users must defined')
@@ -262,6 +297,19 @@ class EasyLeveling extends EventEmitter {
             top10.push(XPforGuild[i])
         }
         return top10
+    }
+    /**
+     * Generate a chart of the XP usage in a guild
+     * @param {string} guildId the id of a discord guild you want the chart to generate
+     * @param {number} amountOfUsers amount of users in a chart (do not set it higher than 5)
+     * @returns {BufferEncoding} Image of a chart buffered
+     */
+    async generateXPChart(guildId, amountOfUsers) {
+        if(!guildId) throw new Error('Easy Level Error: A valid discord guild must be provided')
+        if(!amountOfUsers) throw new Error('Easy level Error: Amount of users must defined')
+        if(typeof amountOfUsers != 'number') throw new TypeError('Easy Level TypeError: Type of \'amount of users\' must be a number')
+        const bufferedChart = generateChartImage(this.dbName, this.db, amountOfUsers, guildId, this.client)
+        return bufferedChart
     }
 }
 module.exports = EasyLeveling

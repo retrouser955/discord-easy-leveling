@@ -14,7 +14,7 @@ const options = {
 const fs = require('fs')
 const Discord = require('discord.js')
 const path = require('path');
-const dirPath = path.resolve(__dirname, '../commands');
+const dirPath = path.resolve(__dirname, './commands');
 
 
 client.commands = new Discord.Collection();
