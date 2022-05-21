@@ -1,6 +1,6 @@
 # Discord Easy Leveling
 
-A complete framework to make a leveling system using discord.js v13
+A complete framework to implement a leveling system using discord.js v13
 
 # Why discord-easy-leveling?
 
