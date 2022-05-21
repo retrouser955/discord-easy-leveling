@@ -1,6 +1,6 @@
 {
   "name": "discord-easy-leveling",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "An easy package to make leveling system for your bot",
   "main": "index.js",
   "author": "retro_ig",
@@ -25,7 +25,7 @@
     "discordjs"
   ],
   "repository": {
-    "url": "https://retrouser955.github.io/discord-easy-leveling"
+    "url": "https://github.com/retrouser955/discord-easy-leveling"
   },
   "homepage": "https://retrouser955.github.io/discord-easy-leveling",
   "devDependencies": {
