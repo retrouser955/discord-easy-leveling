@@ -10,9 +10,15 @@
       "monospaceLinks": true
     },
     "opts": {
+      "encoding": "utf8",
+      "verbose": true,
       "recurse": true,
       "destination": "./docs/",
       "tutorials": "./tutorials",
-      "readme": "./readme.md"
+      "readme": "./readme.md",
+      "template": "./node_modules/clean-jsdoc-theme",
+      "theme_opts": {
+        "theme": "dark"
+      }
     }
   }
