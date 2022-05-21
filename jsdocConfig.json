@@ -18,21 +18,18 @@
     "readme": "./readme.md",
     "template": "./node_modules/clean-jsdoc-theme",
     "theme_opts": {
-      "theme": "dark"
+      "theme": "dark",
+      "meta": [
+        {
+          "name": "author",
+          "content": "retrouser955"
+        },
+        {
+          "name": "description",
+          "content": "A complete framework to implement a leveling system using discord.js v13"
+        }
+      ],
+      "title": "Discord Easy Leveling"
     }
-  },
-  "meta": [
-    {
-      "name": "author",
-      "content": "retrouser955"
-    },
-    {
-      "name": "description",
-      "content": "A complete framework to implement a leveling system using discord.js v13"
-    },
-    {
-      "name": "keywords",
-      "content": "NPM, javascript, discord, leveling"
-    }
-  ]
+  }
 }
