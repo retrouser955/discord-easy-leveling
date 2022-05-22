@@ -11,7 +11,7 @@ A complete framework to implement a leveling system using discord.js v13
 
 # Getting started!
 
-Keep in mind that there are docs for this project [here](http://retrouser955.github.io/discord-easy-leveling)
+Keep in mind that there are docs for this project [here](https://discord-easy-leveling.js.org/)
 
 ```js
 const { Client, Intents } = require('discord.js')

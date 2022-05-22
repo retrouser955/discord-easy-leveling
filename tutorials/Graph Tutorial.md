@@ -1,4 +1,4 @@
-# Generating an XP bar chart
+# Generating a XP bar chart
 
 Discord Easy Leveling provide a quick and easy way to generate a chart image of levels in a guild
 
@@ -15,7 +15,7 @@ const config = {
 }
 client.login(config.TOKEN)
 ```
-We can then add discord easy leveling to it (I won't go over much of this part as you can read the [readme](https://github.com/retrouser955/discord-easy-leveling#getting-started))
+We can then add discord easy leveling to it (I won't go over much of this part as you can read the [readme](https://discord-easy-leveling.js.org/index.html))
 ```js
 const { Client, Intents, MessageAttachment } = require('discord.js')
 const client = new Client({
@@ -55,7 +55,7 @@ client.on('messageCreate', (message) => {
     client.leveling.addLevels(message.author.id, message.guild.id, message.channel.id)
     if(message.content === '!chart') {
         const chart = await client.leveling.generateXPChart(message.guild.id, 5) // will return a buffered image
-        // check the docs https://retrouser955.github.io/discord-easy-leveling/EasyLeveling.html for more info on the parameters
+        // check the docs https://discord-easy-leveling.js.org/EasyLeveling.html#generateXPChart for more info on the parameters
         const attachment = new MessageAttachment(chart, 'chart.png')
         message.reply({
             files: [attachment]
