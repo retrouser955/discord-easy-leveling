@@ -1,3 +1,4 @@
+let db;
 /**
  * Options for discord easy leveling
  * @typedef {object} DiscordEasyLevelingOptions
@@ -46,9 +47,11 @@ class EasyLeveling extends EventEmitter {
         this.levelUpXP = options.levelUpXP || 100
         if(options.database == 'json') {
             this.db = new Database('./EasyLeveling.json')
+            db = this.db
 	        this.dbName = 'json'
         } else if(options.database == 'sqlite') {
             this.db = require('quick.db')
+            db = this.db
 	        this.dbName = 'sqlite'
         } else {
             throw new Error("Easy Leveling Error: Database must be an option between a 'json' databse and a 'sqlite' database")
@@ -312,4 +315,7 @@ class EasyLeveling extends EventEmitter {
         return bufferedChart
     }
 }
-module.exports = EasyLeveling
+module.exports = {
+    EasyLeveling: EasyLeveling,
+    db: db
+}
