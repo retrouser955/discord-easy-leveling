@@ -2,7 +2,7 @@ const { Client: DiscordClient, Intents } = require('discord.js')
 const client = new DiscordClient({
     intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES]
 })
-const { EasyLeveling } = require('../index.js')
+const { EasyLeveling, RegisterRanks } = require('../index.js')
 const config = require('./config.json')
 const options = {
     startingXP: 0,
@@ -15,11 +15,7 @@ const fs = require('fs')
 const Discord = require('discord.js')
 const path = require('path');
 const dirPath = path.resolve(__dirname, './commands');
-
-
 client.commands = new Discord.Collection();
-
-
 const commandFiles = fs.readdirSync(`${ dirPath }`).filter(file => file.endsWith('.js'));
 for (const file of commandFiles) {
     const command = require(`${ dirPath }/${ file }`);
