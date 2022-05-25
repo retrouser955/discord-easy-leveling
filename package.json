@@ -1,6 +1,6 @@
 {
   "name": "discord-easy-leveling",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "An easy package to make leveling system for your bot",
   "main": "index.js",
   "author": "retro_ig",
@@ -11,8 +11,10 @@
     "serveDocs": "jsdoc -c jsdocConfig.json"
   },
   "dependencies": {
+    "@discordjs/rest": "^0.4.1",
     "chart.js-image": "^6.0.3",
     "clean-jsdoc-theme": "^3.3.4",
+    "discord-api-types": "^0.33.0",
     "discord.js": "^13.7.0",
     "easy-json-database": "^1.5.0",
     "events": "^3.3.0",

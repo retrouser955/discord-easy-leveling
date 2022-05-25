@@ -2,7 +2,7 @@
   "source": {
     "include": ["src"],
     "includePattern": ".js$",
-    "excludePattern": "(node_modules/|docs|src/xpChart.js|src/deletedb.js|src/events)"
+    "excludePattern": "(node_modules/|docs|src/xpChart.js|src/deletedb.js|src/events|registerRank.js)"
   },
   "plugins": ["plugins/markdown"],
   "templates": {
