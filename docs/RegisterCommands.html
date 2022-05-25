@@ -37,7 +37,7 @@
 
 
     <title>
-      Home
+      RegisterCommands
     </title>
 
     <!--[if lt IE 9]>
@@ -103,15 +103,217 @@
 
     <div id="main" class="main-content">
       
+      <h1 id='page-title' class="page-title">
+        RegisterCommands
+      </h1>
+      
 
       
 
 
 
+
+<section>
+
+
+<header>
+    
+        
+        <h2>
+        
+        RegisterCommands
+        
+        </h2>
+        
+        
+    
+</header>
+
+
+<article>
+    <div class="container-overview">
+    
+        
+
+    
+
+    <h4 class="name" id="RegisterCommands">
+        <a href="#RegisterCommands">#</a>
+        <span class="type-signature"></span>new RegisterCommands<span class="signature">(commands, token, clientID)</span><span class="type-signature"></span>
+    </h4>
+
     
 
 
 
+    <div class="description">
+        <p>Easily register slash commands</p>
+    </div>
+
+
+
+
+
+
+
+
+
+    <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
+        <strong>Parameters:</strong>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>commands</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;object></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Array of commands needed to register slash commands</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>token</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Token needed by rest to register slash commands</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>clientID</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Client id of the bot</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    </div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <div class="details-item-container">
+            <dt class="tag-source">Source:</dt>
+            <dd class="tag-source"><ul class="dummy"><li>
+                <a href="registerCommands.js.html">registerCommands.js</a>, <a href="registerCommands.js.html#line10">line 10</a>
+            </li></ul></dd>
+        </div>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -119,62 +321,174 @@
 
 
     
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id="register">
+        <a href="#register">#</a>
+        <span class="type-signature">(async) </span>register<span class="signature">(guildId)</span><span class="type-signature"></span>
+    </h4>
+
+    
 
 
-    <section class="readme">
-        <article><h1>Discord Easy Leveling</h1>
-<p>A complete framework to implement a leveling system using discord.js v13</p>
-<h1>Why discord-easy-leveling?</h1>
-<p>✨ Beginner friendly<br>
-✍ Full customization<br>
-☁  LightWeight<br>
-🦺 Does not use your discord bot token</p>
-<h1>Getting started!</h1>
-<p>Keep in mind that there are docs for this project <a href="https://discord-easy-leveling.js.org/">here</a></p>
-<pre class="prettyprint source lang-js"><code>const { Client, Intents } = require('discord.js')
-// create a new client with discord.js
-const client = new Client({
-    intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES]
-})
-const { EasyLeveling } = require('discord-easy-leveling')
-const config = {
-    TOKEN: 'sUp3r-s3Cr31-t0K3n'
-}
-// options for the package
-// this can be changed based of your needs
-const options = {
-    startingXP: 0,
-    startingLevel: 1,
-    levelUpXP: 100,
-    database: 'sqlite' // or 'json'
-}
-const leveling = new EasyLeveling(client, options)
-// creating a new 'EasyLeveling' client
-client.leveling = leveling
-// now you can access the leveling module everywhere!
-client.on('ready', () => {
-    console.log(client.user.tag + ' is ready!')
-})
-client.on('messageCreate', (message) => {
-    if(message.author.bot) return
-    // will not add xp is the message author is bot
-    client.leveling.addLevels(message.author.id, message.guild.id, message.channel.id)
-    // add levels to message author in message guild
-    // the first parameter is message author's id
-    // the second parameter is message guild's id
-    // the third parameter is message channel's id
-})
-client.leveling.on('UserLevelUp', (newLevel, lastLevel, userId, guildId, channelId) => {
-    // This event is fired when a user level up
-    client.channels.cache.get(channelId).send(`Congrats &lt;@${userid}>! You have advanced to level ${newLevel}. Your old level was level ${lastLevel}`)
-})
-// login with discord bot token
-client.login(config.TOKEN)
-</code></pre>
-<p>Having problems using the packge? Join our <a href="https://discord.gg/PpPgaCZR44">discord server</a> to get help!</p></article>
-    </section>
+
+    <div class="description">
+        <p>Register slash commands</p>
+    </div>
 
 
+
+
+
+
+
+
+
+    <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
+        <strong>Parameters:</strong>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>guildId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>ID of the guild you want to register slash in</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    </div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <div class="details-item-container">
+            <dt class="tag-source">Source:</dt>
+            <dd class="tag-source"><ul class="dummy"><li>
+                <a href="registerCommands.js.html">registerCommands.js</a>, <a href="registerCommands.js.html#line22">line 22</a>
+            </li></ul></dd>
+        </div>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
 
 
 

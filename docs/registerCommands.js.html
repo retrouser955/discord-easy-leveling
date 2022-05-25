@@ -37,7 +37,7 @@
 
 
     <title>
-      Home
+      registerCommands.js
     </title>
 
     <!--[if lt IE 9]>
@@ -103,78 +103,56 @@
 
     <div id="main" class="main-content">
       
+      <h1 id='page-title' class="page-title">
+        registerCommands.js
+      </h1>
+      
 
       
 
 
 
     
-
-
-
-
-
-
-
-
-
-    
-
-
-    <section class="readme">
-        <article><h1>Discord Easy Leveling</h1>
-<p>A complete framework to implement a leveling system using discord.js v13</p>
-<h1>Why discord-easy-leveling?</h1>
-<p>✨ Beginner friendly<br>
-✍ Full customization<br>
-☁  LightWeight<br>
-🦺 Does not use your discord bot token</p>
-<h1>Getting started!</h1>
-<p>Keep in mind that there are docs for this project <a href="https://discord-easy-leveling.js.org/">here</a></p>
-<pre class="prettyprint source lang-js"><code>const { Client, Intents } = require('discord.js')
-// create a new client with discord.js
-const client = new Client({
-    intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES]
-})
-const { EasyLeveling } = require('discord-easy-leveling')
-const config = {
-    TOKEN: 'sUp3r-s3Cr31-t0K3n'
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const { REST } = require('@discordjs/rest');
+const { Routes } = require('discord-api-types/v9'); 
+class RegisterCommands {
+    /**
+     * Easily register slash commands
+     * @param {Array&lt;object>} commands Array of commands needed to register slash commands
+     * @param {string} token Token needed by rest to register slash commands
+     * @param {string} clientID Client id of the bot
+     */
+    constructor(commands, token, clientID) {
+        if(!commands) throw new Error('Register Commands error: Array of commands must be provided')
+        if(!token) throw new Error('Register Commands error: a valid discord bot token must be provided')
+        if(!clientID) throw new Error('Register Commands error: a valid discord bot client id must be provided')
+        this.commands = commands
+        this.rest = new REST({ version: '9' }).setToken(token)
+        this.id = clientID
+    }
+    /**
+     * Register slash commands
+     * @param {string} guildId ID of the guild you want to register slash in
+     */
+    async register(guildId) {
+        if(!guildId) {
+            await this.rest.put(
+                Routes.applicationCommands(this.id),
+                { body: this.commands }
+            )
+        } else {
+            await this.rest.put(
+                Routes.applicationGuildCommands(this.id, guildId),
+                { body: this.commands }
+            )
+        }
+    }
 }
-// options for the package
-// this can be changed based of your needs
-const options = {
-    startingXP: 0,
-    startingLevel: 1,
-    levelUpXP: 100,
-    database: 'sqlite' // or 'json'
-}
-const leveling = new EasyLeveling(client, options)
-// creating a new 'EasyLeveling' client
-client.leveling = leveling
-// now you can access the leveling module everywhere!
-client.on('ready', () => {
-    console.log(client.user.tag + ' is ready!')
-})
-client.on('messageCreate', (message) => {
-    if(message.author.bot) return
-    // will not add xp is the message author is bot
-    client.leveling.addLevels(message.author.id, message.guild.id, message.channel.id)
-    // add levels to message author in message guild
-    // the first parameter is message author's id
-    // the second parameter is message guild's id
-    // the third parameter is message channel's id
-})
-client.leveling.on('UserLevelUp', (newLevel, lastLevel, userId, guildId, channelId) => {
-    // This event is fired when a user level up
-    client.channels.cache.get(channelId).send(`Congrats &lt;@${userid}>! You have advanced to level ${newLevel}. Your old level was level ${lastLevel}`)
-})
-// login with discord bot token
-client.login(config.TOKEN)
-</code></pre>
-<p>Having problems using the packge? Join our <a href="https://discord.gg/PpPgaCZR44">discord server</a> to get help!</p></article>
+module.exports = RegisterCommands</code></pre>
+        </article>
     </section>
-
-
 
 
 
